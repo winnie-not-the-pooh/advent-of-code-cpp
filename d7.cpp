@@ -175,7 +175,7 @@ int main() {
         }
         cout << endl;*/
     
-    cout << "\tKEY\t\t\t\tELEMENT (inner bags)\n";
+    /*cout << "\tKEY\t\t\t\tELEMENT (inner bags)\n";
     for (map <string, map<string, uint32_t>>::iterator it = Contains.begin(); it != Contains.end(); ++it)
     {
         cout << it->first << "\t\t\t";
@@ -188,10 +188,10 @@ int main() {
         }
         cout << "\n";
     }
-    cout << "\n\n\n";
+    cout << "\n\n\n";*/
     
     /* FIRST PART */
-    /*map<string, string>::iterator it;
+    map<string, string>::iterator it;
 
     vector<string> bagsContaining;
     set<string> uniqueBagsContaining;
@@ -202,71 +202,60 @@ int main() {
     while(!bagsContaining.empty())
     {
         bagToLookFor = *bagsContaining.begin();
-        //cout << "looking for " << bagToLookFor << endl;
         it = whichContains.find(bagToLookFor);
         if(it != whichContains.end())
         {
-            //cout << it->second << " can contain it .." ;
             bagsContaining.push_back(it->second);
             whichContains.erase (it);
             uniqueBagsContaining.insert(it->second);
-            //cout << uniqueBagsContaining.size() << " " ;
         }
         else
         {
             bagsContaining.erase(bagsContaining.begin());
         }
     }
-    printf ("# bags that can contain shiny gold: %lu.\n", uniqueBagsContaining.size());*/
+    printf ("# bags that can contain shiny gold: %lu.\n", uniqueBagsContaining.size());
     
     /* SECOND PART */
     
     map<string, map<string, uint32_t>>::iterator itr;
     map<string, uint32_t>::iterator it2;
-    
+
     int totalBagsContained = 0;
-    
+
     vector<Contains_s> bagsContained;
-    
+
     Contains_s bag;
     bag.bagType = "shinygold";
     bag.numBags = 1;
     bag.numParentBags = 1;
-    
+
     bagsContained.push_back(bag);
-    
+
     while(!bagsContained.empty())
     {
         string bagToLookFor = bagsContained.front().bagType;
         int numParentBags = bagsContained.front().numBags*bagsContained.front().numParentBags;
         itr = Contains.find(bagToLookFor);
-        
+
         if(itr != Contains.end())
         {
-            cout << bagToLookFor << " can hold" << endl;
             map<string, uint32_t> &internal_map = itr->second;
             for (it2 = internal_map.begin(); it2 != internal_map.end(); ++it2)
             {
-                cout << it2->second << " " << it2->first;
-                
                 Contains_s bag;
                 bag.bagType = it2->first;
                 bag.numBags = it2->second;
                 bag.numParentBags = numParentBags;
                 bagsContained.push_back(bag);
-                
+
                 totalBagsContained = totalBagsContained + numParentBags*it2->second;
-                cout << " Total count = " << totalBagsContained << endl;
             }
-            Contains.erase (itr);
         }
-        else
-        {
-            bagsContained.erase(bagsContained.begin());
-        }
+        bagsContained.erase(bagsContained.begin());
     }
     
-    printf ("# bags that are inside the shiny gold bag: %i.\n", totalBagsContained); //3605, 3743 too low should be 45018
+    printf ("# bags that are inside the shiny gold bag: %i.\n", totalBagsContained);
     return 0;
 }
 
