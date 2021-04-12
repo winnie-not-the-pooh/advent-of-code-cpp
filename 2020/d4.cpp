@@ -5,7 +5,12 @@
 #include <regex>
 
 using namespace std;
-       
+
+unsigned long findFirstSpace(long startPos, string str)
+{
+    return str.substr(startPos,str.length()-startPos).find(' ');
+}
+
 int main()
 {
     ifstream file("input.txt");
@@ -14,116 +19,117 @@ int main()
     int valPassports_p1 = 0;
     int valPassports_p2 = 0;
 
-    bool hasByr_p1 = 0;
-    bool hasIyr_p1 = 0;
-    bool hasEyr_p1 = 0;
-    bool hasHgt_p1 = 0;
-    bool hasHcl_p1 = 0;
-    bool hasEcl_p1 = 0;
-    bool hasPid_p1 = 0;
+    bool hasByr = 0;
+    bool hasIyr = 0;
+    bool hasEyr = 0;
+    bool hasHgt = 0;
+    bool hasHcl = 0;
+    bool hasEcl = 0;
+    bool hasPid = 0;
     
-    bool hasByr_p2 = 0;
-    bool hasIyr_p2 = 0;
-    bool hasEyr_p2 = 0;
-    bool hasHgt_p2 = 0;
-    bool hasHcl_p2 = 0;
-    bool hasEcl_p2 = 0;
-    bool hasPid_p2 = 0;
+    bool byr_val = 0;
+    bool iyr_val = 0;
+    bool eyr_val = 0;
+    bool hgt_val = 0;
+    bool hcl_val = 0;
+    bool ecl_val = 0;
+    bool pid_val = 0;
 
     while(getline(file,line))
     {
         if (line.find("byr:")!=string::npos)
         {
-            hasByr_p1=1;
-            int byr = stoi(line.substr(line.find("byr:")+4,4));
+            hasByr=1;
+            unsigned long byr_start = line.find("byr:");
+            unsigned int byr = stoi(line.substr(byr_start+4,findFirstSpace(byr_start, line)-4));
             if(byr>=1920 && byr<=2002)
-            {hasByr_p2=1;}
+            {byr_val=1;}
         }
         if (line.find("iyr:")!=string::npos)
         {
-            hasIyr_p1=1;
-            int iyr = stoi(line.substr(line.find("iyr:")+4,4));
+            hasIyr=1;
+            unsigned long iyr_start = line.find("iyr:");
+            unsigned int iyr = stoi(line.substr(iyr_start+4,findFirstSpace(iyr_start, line)-4));
             if(iyr>=2010 && iyr<=2020)
-            {hasIyr_p2=1;}
+            {iyr_val=1;}
         }
         if (line.find("eyr:")!=string::npos)
         {
-            hasEyr_p1=1;
-            int eyr = stoi(line.substr(line.find("eyr:")+4,4));
+            hasEyr=1;
+            unsigned long eyr_start = line.find("eyr:");
+            unsigned int eyr = stoi(line.substr(eyr_start+4,findFirstSpace(eyr_start, line)-4));
             if(eyr>=2020 && eyr<=2030)
-            {hasEyr_p2=1;}
+            {eyr_val=1;}
         }
         if (line.find("hgt:")!=string::npos)
         {
-            hasHgt_p1=1;
-            
-            string hgt = line.substr(line.find("hgt:")+4,5);
-            if(hgt.find("cm")!=string::npos)
+            hasHgt=1;
+            unsigned long hgt_start = line.find("hgt:");
+            string hgt = line.substr(hgt_start+4,findFirstSpace(hgt_start, line)-4);
+            string unit = hgt.substr(hgt.length()-2,2);
+            if(unit == "cm" || unit == "in")
             {
-                try
+                unsigned long height_val = stol(hgt.substr(0,hgt.length()-2));
+                if(
+                   (unit == "cm" && (height_val>=150 && height_val <= 193)) ||
+                   (unit == "in" && (height_val>=59  && height_val <= 76))
+                   )
                 {
-                    int hgtCm = stoi(hgt.substr(hgt.find("cm")-3,3));
-                    if(hgtCm>=150 && hgtCm <= 193)
-                    {hasHgt_p2=1;}
+                    hgt_val=1;
                 }
-                catch (...) {}
-            }
-           else if(hgt.find("in")!=string::npos)
-            {
-                int hgtIn = stoi(hgt.substr(hgt.find("in")-2,2));
-                if(hgtIn>=59 && hgtIn <= 76)
-                {hasHgt_p2=1;}
             }
         }
         if (line.find("hcl:")!=string::npos)
         {
-            hasHcl_p1=1;
+            hasHcl=1;
+            unsigned long hcl_start = line.find("hcl:");
             regex regexp("#[a-f0-9]{6}");
-            if(regex_match(line.substr(line.find("hcl:")+4,7),regexp))
-            {hasHcl_p2=1;}
+            string stringToMatch = line.substr(hcl_start+4,findFirstSpace(hcl_start, line)-4);
+            if(regex_match(stringToMatch,regexp))
+            {hcl_val=1;}
         }
         if (line.find("ecl:")!=string::npos)
         {
-            hasEcl_p1=1;
+            hasEcl=1;
             string ecl = line.substr(line.find("ecl:")+4,3);
             if(ecl=="amb" || ecl=="blu" || ecl=="brn" || ecl=="gry" || ecl=="grn" || ecl=="hzl" || ecl=="oth")
-            {hasEcl_p2=1;}
+            {ecl_val=1;}
         }
         if (line.find("pid:")!=string::npos)
         {
-            hasPid_p1=1;
+            hasPid=1;
+            unsigned long pid_start = line.find("pid:");
+            string stringToMatch = line.substr(pid_start+4,findFirstSpace(pid_start, line)-4);
             regex regexp("[0-9]{9}");
-            if(regex_match(line.substr(line.find("pid:")+4,9),regexp))
-            {hasPid_p2=1;}
+            if(regex_match(stringToMatch,regexp))
+            {pid_val=1;}
         }
 
         if(line=="")
         {
-            if (hasByr_p1 && hasIyr_p1 && hasEyr_p1 && hasHgt_p1 && hasHcl_p1 && hasEcl_p1 && hasPid_p1)
-            {
-                valPassports_p1++;
-                if (hasByr_p2 && hasIyr_p2 && hasEyr_p2 && hasHgt_p2 && hasHcl_p2 && hasEcl_p2 && hasPid_p2)
-                valPassports_p2++;
-            }
-
-            hasByr_p1 = 0;
-            hasIyr_p1 = 0;
-            hasEyr_p1 = 0;
-            hasHgt_p1 = 0;
-            hasHcl_p1 = 0;
-            hasEcl_p1 = 0;
-            hasPid_p1 = 0;
+            if (hasByr && hasIyr && hasEyr && hasHgt && hasHcl && hasEcl && hasPid)
+            {valPassports_p1++;}
             
-            hasByr_p2 = 0;
-            hasIyr_p2 = 0;
-            hasEyr_p2 = 0;
-            hasHgt_p2 = 0;
-            hasHcl_p2 = 0;
-            hasEcl_p2 = 0;
-            hasPid_p2 = 0;
+            if (byr_val && iyr_val && eyr_val && hgt_val && hcl_val && ecl_val && pid_val)
+            {valPassports_p2++;}
+
+            hasByr = 0;
+            hasIyr = 0;
+            hasEyr = 0;
+            hasHgt = 0;
+            hasHcl = 0;
+            hasEcl = 0;
+            hasPid = 0;
+            
+            byr_val = 0;
+            iyr_val = 0;
+            eyr_val = 0;
+            hgt_val = 0;
+            hcl_val = 0;
+            ecl_val = 0;
+            pid_val = 0;
         }
     }
-    printf ("The number of valid passports for p1 and p2 are %i, %i. \n", valPassports_p1, valPassports_p2); //skips the last line, and part 2 is off by a bit (over counts by 2)
+    printf ("The number of valid passports for p1 and p2 are %i, %i. \n", valPassports_p1, valPassports_p2);
     return 0;
 }
-
