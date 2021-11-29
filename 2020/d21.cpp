@@ -34,13 +34,12 @@ void printVector(vector<allergen> vec)
 {
     for (int i =0; i<vec.size(); i++)
     {
-        cout << vec[i].name;
-        cout << " ingredients:";
-        for(int s=0;s<vec[i].possible_ingredients.size();s++)
+        cout << vec[i].match << ",";
+        /*for(int s=0;s<vec[i].possible_ingredients.size();s++)
         {
             cout << vec[i].possible_ingredients[s] << "/" ;
         }
-        cout << " matches:" << vec[i].match << endl;
+        cout << " matches:" << vec[i].match << endl;*/
     }
     cout << "\n";
     return;
@@ -230,7 +229,7 @@ int main()
         {
             //cout << "Calculating frequency for " << allergens[a].name << endl;
             vector<string> most_frequent = mostFrequent(allergens[a].possible_ingredients);
-            if(most_frequent.size()==1)
+            if(most_frequent.size()==1 && allergens[a].match.compare("None")==0)
             {
                 string str_match = most_frequent[0];
                 cout << allergens[a].name << " matches " << str_match << endl;
@@ -241,9 +240,8 @@ int main()
     } while(!allMatchesFound(allergens));
     
     cout << endl;
-    //printVector(allergens);
     //cout << all_ingredients << endl;
     cout << "Times non-allergen ingredients appear:  " << countSafeIngredients(all_ingredients, allergens) << endl;
-    // answer is between 2400 and 2639
+    printVector(allergens);
     return 0;
 }
